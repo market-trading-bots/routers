@@ -1,3 +1,5 @@
+VENV_PATH := .venv
+
 # Default target
 .PHONY: all
 all: help
@@ -25,6 +27,12 @@ isort:
 lint: black isort
 	@echo "Linting complete."
 
+# Run pre-commit
+.PHONY: pre-commit
+pre-commit:
+	@echo "Running pre-commit..."
+	$(VENV_PATH)/bin/pre-commit run --all-files
+
 # Clean up .pyc and cache files
 .PHONY: clean
 clean:
@@ -40,5 +48,6 @@ help:
 	@echo "  make black     - Format code with Black"
 	@echo "  make isort     - Sort imports with isort"
 	@echo "  make lint      - Run both linters (Black and isort)"
+	@echo "  make pre-commit- Run pre-commit"
 	@echo "  make clean     - Clean up temporary files"
 	@echo "  make help      - Show this help message"
