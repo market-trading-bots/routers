@@ -1,13 +1,12 @@
 FROM python:3.10-slim-bookworm AS base
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+ENV PATH="/app/.venv/bin:/root/.local/bin/:$PATH"
 ENV TZ="UTC"
+
+ADD . /app
 
 WORKDIR /app
 
-RUN pip install uv
-
-FROM base AS build
-
-COPY pyproject.toml uv.lock ./
-
-RUN uv sync
+RUN uv sync --frozen
