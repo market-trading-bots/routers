@@ -1,4 +1,5 @@
 import os
+from typing import Callable
 
 import pytest
 
@@ -10,7 +11,7 @@ EXCHANGES = ("BinanceFutures",)
 
 
 @pytest.fixture
-def setup_router(exchange):
+def setup_router(exchange: str) -> BaseExchangeRouter:
     """Fixture to initialize router with testnet settings."""
     os.environ[f"{exchange.upper()}_TESTNET"] = "True"
     config = getattr(routers.configs, f"{exchange}Config").from_env()
@@ -22,7 +23,7 @@ def setup_router(exchange):
 
 
 @pytest.mark.parametrize("exchange", EXCHANGES)
-def test_router(setup_router, exchange):
+def test_router(setup_router: BaseExchangeRouter, exchange: str) -> None:
     router = setup_router
 
     # Get initial balance

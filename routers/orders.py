@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -12,5 +12,5 @@ class Order:
     timeInForce: Optional[str] = None  # needed for limit orders e.g. GTC / IOC / FOK
     id: Optional[str] = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)

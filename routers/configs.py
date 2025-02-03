@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
+from typing import Any, Optional
 
 
 class BaseRouterConfig(ABC):
@@ -19,7 +20,7 @@ class BaseRouterConfig(ABC):
 class BinanceFuturesConfig(BaseRouterConfig):
     key: str
     secret: str
-    base_url: str = "https://fapi.binance.com"
+    base_url: Optional[str] = "https://fapi.binance.com"
 
     @classmethod
     def from_env(cls) -> BinanceFuturesConfig:
@@ -43,7 +44,7 @@ class BinanceFuturesConfig(BaseRouterConfig):
 
         return cls(api_key, secret_key, base_url)
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -51,7 +52,7 @@ class BinanceFuturesConfig(BaseRouterConfig):
 class BinanceConfig(BaseRouterConfig):
     api_key: str
     api_secret: str
-    base_url: str = "https://api.binance.com"
+    base_url: Optional[str] = "https://api.binance.com"
 
     @classmethod
     def from_env(cls) -> BinanceConfig:
@@ -75,5 +76,5 @@ class BinanceConfig(BaseRouterConfig):
 
         return cls(api_key, secret_key, base_url)
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)

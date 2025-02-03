@@ -22,9 +22,15 @@ isort:
 	@echo "Running isort..."
 	uv run isort .
 
+# MyPy checks
+.PHONY: mypy
+mypy:
+	@echo "Running MyPy..."
+	uv run mypy .
+
 # Run both linters
 .PHONY: lint
-lint: black isort
+lint: black isort mypy
 	@echo "Linting complete."
 
 # Run pre-commit
