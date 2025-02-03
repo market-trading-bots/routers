@@ -51,3 +51,20 @@ help:
 	@echo "  make pre-commit- Run pre-commit"
 	@echo "  make clean     - Clean up temporary files"
 	@echo "  make help      - Show this help message"
+
+# Build the container
+.PHONY: build
+build:
+	@echo "Building the container..."
+	docker build . -t router
+
+# Run the container
+.PHONY: run
+run:
+	@echo "Running the container..."
+	docker run -it --rm --env-file .env router
+
+.PHONY: tests
+tests: build
+	@echo "Running tests inside the container..."
+	docker run --rm --env-file .env router pytest -v tests/

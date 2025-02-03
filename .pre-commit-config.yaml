@@ -9,3 +9,11 @@ repos:
     hooks:
       - id: isort
         args: ["--profile", "black"]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run Pytest
+        entry: make tests
+        language: system
+        pass_filenames: false
