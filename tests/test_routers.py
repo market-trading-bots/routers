@@ -6,7 +6,7 @@ import routers
 from routers.base import BaseExchangeRouter
 from routers.orders import Order
 
-EXCHANGES = ("BinanceFutures",)
+EXCHANGES = ("BinanceFutures", "Binance")
 
 
 @pytest.fixture
@@ -29,13 +29,17 @@ def test_router(setup_router: BaseExchangeRouter, exchange: str) -> None:
     initial_balance = router.get_balance()
     assert initial_balance is not None, f"Failed to fetch balance for {exchange}."
 
+    # Get book tickers
+    book_ticker = router.get_book_ticker("BTCUSDT")
+
+    assert book_ticker is not None, f"Failed to fetch book ticker for {exchange}."
     # Create a test order
     test_order = Order(
         symbol="BTCUSDT",
         side="BUY",
         type="LIMIT",
-        quantity=1,
-        price=1_000,
+        quantity=0.1,
+        price=round(0.95 * float(book_ticker["bidPrice"]), 0),
         timeInForce="GTC",
     )
 
@@ -45,7 +49,8 @@ def test_router(setup_router: BaseExchangeRouter, exchange: str) -> None:
     assert order_id, f"Order placement failed on {exchange}, response: {order_response}"
 
     # Verify order is placed
-    placed_orders = router.get_order_status(symbol="BTCUSDT")
+    placed_orders = router.get_order_status(order_id=order_id, symbol="BTCUSDT")
+
     assert any(
         o["orderId"] == order_id for o in placed_orders
     ), f"Order {order_id} not found in {exchange} orders."
@@ -54,10 +59,15 @@ def test_router(setup_router: BaseExchangeRouter, exchange: str) -> None:
     router.cancel_order(test_order.symbol, order_id)
 
     # Ensure order is canceled
-    remaining_orders = router.get_order_status(symbol="BTCUSDT")
+    remaining_orders = router.get_order_status(order_id=order_id, symbol="BTCUSDT")
+    remaining_orders = [
+        order
+        for order in remaining_orders
+        if order.get("status") not in ["CANCELED", None]
+    ]
     assert not any(
         o["orderId"] == order_id for o in remaining_orders
-    ), f"Order {order_id} not canceled on {exchange}."
+    ), f"Order {order_id} not canceled on {exchange}. {[o for o in remaining_orders if o['orderId'] == order_id]}"
 
     # Verify balance remains the same
     final_balance = router.get_balance()
